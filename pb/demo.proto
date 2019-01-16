@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package ymotongpoo;
+
+// ---- arrayparseservice ----
+
+service ArrayParseService {
+    rpc Parse(ParseRequest) returns (ParsedArray) {}
+}
+
+message ParseRequest {
+    target_str string = 1;
+}
+
+message ParsedArray {
+    repeated number int64 = 1;
+}
+
+// ---- addnumberservice ----
+
+service AddNumberService {
+    rpc Add(AddRequest) returns (AddResult) {}
+}
+
+message AddRequest {
+    repeated number int64 = 1;
+}
+
+message AddResult {
+    result int64 = 1;
+}
