@@ -9,11 +9,11 @@ service ArrayParseService {
 }
 
 message ParseRequest {
-    target_str string = 1;
+    string target_str = 1;
 }
 
 message ParsedArray {
-    repeated number int64 = 1;
+    repeated int64 number = 1;
 }
 
 // ---- addnumberservice ----
@@ -23,9 +23,9 @@ service AddNumberService {
 }
 
 message AddRequest {
-    repeated number int64 = 1;
+    repeated int64 number = 1;
 }
 
 message AddResult {
-    result int64 = 1;
+    int64 number = 1;
 }

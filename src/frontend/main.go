@@ -17,7 +17,7 @@ package main
 import (
 	"context"
 	"log"
-	_ "net/http"
+	"net/http"
 	"os"
 	"time"
 
@@ -40,15 +40,15 @@ const (
 	initMaxRetry = 3
 )
 
-var logger *logrus.Logger
+var (
+	logger *logrus.Logger
 
-type frontendServer struct {
 	arrayParseSvcAddr string
 	arrayParseSvcConn *grpc.ClientConn
 
 	addNumberSvcAddr string
 	addNumberSvcConn *grpc.ClientConn
-}
+)
 
 func main() {
 	ctx := context.Background()
@@ -59,36 +59,25 @@ func main() {
 		srvPort = p
 	}
 	addr := os.Getenv("LISTEN_ADDR")
-	svc := new(frontendServer)
-	mustMapEnv(&svc.arrayParseSvcAddr, "ARRAY_PARSE_SERVICE_ADDR")
-	mustMapEnv(&svc.addNumberSvcAddr, "ADD_NUMBER_SERVICE_ADDR")
-	mustConnGRPC(ctx, &svc.arrayParseSvcConn, svc.arrayParseSvcAddr)
-	mustConnGRPC(ctx, &svc.addNumberSvcConn, svc.addNumberSvcAddr)
+	mustMapEnv(&arrayParseSvcAddr, "ARRAY_PARSE_SERVICE_ADDR")
+	mustMapEnv(&addNumberSvcAddr, "ADD_NUMBER_SERVICE_ADDR")
+	mustConnGRPC(ctx, &arrayParseSvcConn, arrayParseSvcAddr)
+	mustConnGRPC(ctx, &addNumberSvcConn, addNumberSvcAddr)
 
 	e := echo.New()
 	e.GET("/", homeHandler)
 	e.HEAD("/", homeHandler)
+	e.GET("/_healthz", healthHandler)
 
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
-func mustMapEnv(target *string, envKey string) {
-	v := os.Getenv(envKey)
-	if v == "" {
-		log.Fatalf("environment variable %q not set", envKey)
-	}
-	*target = v
+func homeHandler(c echo.Context) error {
+	return c.String(http.StatusOK, "hello, microservice")
 }
 
-func mustConnGRPC(ctx context.Context, conn **grpc.ClientConn, addr string) {
-	var err error
-	*conn, err = grpc.DialContext(ctx, addr,
-		grpc.WithInsecure(),
-		grpc.WithTimeout(time.Second*3),
-		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
-	if err != nil {
-		panic(errors.Wrapf(err, "grpc: failed to connect %s", addr))
-	}
+func healthHandler(c echo.Context) error {
+	return c.String(http.StatusOK, "ok")
 }
 
 func initLogger() {
@@ -165,4 +154,23 @@ func initProfiling(log logrus.FieldLogger, service, version string) {
 		time.Sleep(d)
 	}
 	logger.Warn("warning: could not initialize stackdriver profiler after retrying, giving up")
+}
+
+func mustMapEnv(target *string, envKey string) {
+	v := os.Getenv(envKey)
+	if v == "" {
+		log.Fatalf("environment variable %q not set", envKey)
+	}
+	*target = v
+}
+
+func mustConnGRPC(ctx context.Context, conn **grpc.ClientConn, addr string) {
+	var err error
+	*conn, err = grpc.DialContext(ctx, addr,
+		grpc.WithInsecure(),
+		grpc.WithTimeout(time.Second*3),
+		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
+	if err != nil {
+		panic(errors.Wrapf(err, "grpc: failed to connect %s", addr))
+	}
 }
