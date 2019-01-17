@@ -19,6 +19,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/profiler"
@@ -32,6 +34,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/frontend/genproto"
 )
 
 const (
@@ -72,13 +75,32 @@ func main() {
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
+// ---- handlers ----
+
 func homeHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "hello, microservice")
+	numStr := c.QueryParam("num")
+	parseReq := &pb.ParseRequest{
+		TargetStr: numStr,
+	}
+
+	apSvc := pb.NewArrayParseServiceClient(arrayParseSvcConn)
+	pa, err := apSvc.Parse(c.Request().Context(), parseReq)
+	if err != nil {
+		logger.Errorf("[homeHandler] %v", err)
+	}
+	paStr := make([]string, len(pa.GetNumbers()))
+	for i, n := range pa.GetNumbers() {
+		paStr[i] = strconv.FormatInt(n, 0)
+	}
+
+	return c.String(http.StatusOK, strings.Join(paStr, ","))
 }
 
 func healthHandler(c echo.Context) error {
 	return c.String(http.StatusOK, "ok")
 }
+
+// ---- init funcitons ----
 
 func initLogger() {
 	logger = logrus.New()
@@ -155,6 +177,8 @@ func initProfiling(log logrus.FieldLogger, service, version string) {
 	}
 	logger.Warn("warning: could not initialize stackdriver profiler after retrying, giving up")
 }
+
+// ---- helpers ----
 
 func mustMapEnv(target *string, envKey string) {
 	v := os.Getenv(envKey)

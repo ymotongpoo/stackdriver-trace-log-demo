@@ -13,7 +13,7 @@ message ParseRequest {
 }
 
 message ParsedArray {
-    repeated int64 number = 1;
+    repeated int64 numbers = 1;
 }
 
 // ---- addnumberservice ----
@@ -23,7 +23,7 @@ service AddNumberService {
 }
 
 message AddRequest {
-    repeated int64 number = 1;
+    repeated int64 numbers = 1;
 }
 
 message AddResult {
