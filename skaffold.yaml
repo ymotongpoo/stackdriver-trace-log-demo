@@ -16,8 +16,8 @@ apiVersion: skaffold/v1beta2
 kind: Config
 build:
   artifacts:
-  - image: backend
-    context: src/backend
+  - image: frontend
+    context: src/frontend
   - image: arrayparse
     context: src/arrayparse
   #- image: addnumber

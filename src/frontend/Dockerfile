@@ -1,11 +1,14 @@
 FROM golang:1.11.4-alpine as builder
-RUN apk add --no-cache ca-certificates git
+RUN apk add --no-cache ca-certificates git build-base
 
 ENV PROJECT github.com/ymotongpoo/stackdriver-trace-log-demo/src/frontend
 WORKDIR /go/src/$PROJECT
+COPY . .
 
 # restore dependencies
-RUN go install .
+ENV GO111MODULE=on
+RUN go get
+RUN go build
 
 FROM alpine as release
 RUN apk add --no-cache ca-certificates \
