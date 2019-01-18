@@ -20,8 +20,8 @@ build:
     context: src/backend
   - image: arrayparse
     context: src/arrayparse
-  - image: addnumber
-    context: src/addnumber
+  #- image: addnumber
+  #  context: src/addnumber
 deploy:
   kubectl:
     manifests:

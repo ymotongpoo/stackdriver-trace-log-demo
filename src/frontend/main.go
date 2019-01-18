@@ -56,6 +56,8 @@ var (
 func main() {
 	ctx := context.Background()
 	initLogger()
+	go initTracing()
+	go initProfiling("frontend", "1.0.0")
 
 	srvPort := port
 	if p := os.Getenv("PORT"); p != "" {
@@ -130,7 +132,7 @@ func initStats(log logrus.FieldLogger, exporter *stackdriver.Exporter) {
 	}
 }
 
-func initTracing(log logrus.FieldLogger) {
+func initTracing() {
 	// This is a demo app with low QPS. trace.AlwaysSample() is used here
 	// to make sure traces are available for observation and analysis.
 	// In a production environment or high QPS setup please use
@@ -157,7 +159,7 @@ func initTracing(log logrus.FieldLogger) {
 	logger.Warn("could not initialize stackdriver exporter after retrying, giving up")
 }
 
-func initProfiling(log logrus.FieldLogger, service, version string) {
+func initProfiling(service, version string) {
 	for i := 1; i <= initMaxRetry; i++ {
 		log := logger.WithField("retry", i)
 		if err := profiler.Start(profiler.Config{
