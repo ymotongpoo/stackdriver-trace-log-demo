@@ -26,7 +26,6 @@ deploy:
   kubectl:
     manifests:
     - ./k8s-manifests/**.yaml
-
 profiles:
 - name: gcb
   build:

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: extension/v1beta1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: frontendservice
@@ -66,7 +66,7 @@ spec:
     app: frontend
   ports:
   - name: http
-    port: 8080
+    port: 80
     targetPort: 8080
 ---
 apiVersion: v1
