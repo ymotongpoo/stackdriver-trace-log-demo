@@ -1,11 +1,12 @@
 import urllib
-from locust import HttpLocust, TaskSet
-from hypothesis import strategy
+from locust import HttpLocust, TaskSet, task
+from hypothesis import strategies
 
-source = stragety.integers(min_value=0, max_value=10000)
-sliceLen = strategy.integers(min_value=1, max_value=15)
+source = strategies.integers(min_value=0, max_value=10000)
+sliceLen = strategies.integers(min_value=1, max_value=15)
 
 class RandomBehavior(TaskSet):
+    @task(1)
     def request(self):
         nums = [source.example() for _ in range(1, sliceLen.example())]
         params = urllib.parse.urlencode({"num": ",".join([str(x) for x in nums])})

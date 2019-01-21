@@ -1,0 +1,13 @@
+# loadgenerator
+
+## Prerequisite
+
+* Python 3.6+ with `pip` (Debian's default Python doesn't come with `pip`)
+
+## Set up
+
+1. `$ python3 -m venv env`
+2. `$ source ./env/bin/activate`
+3. `$ cd $PATH_TO_REPO/loadgen`
+4. `$ pip install -r requirements.txt -c constraints.txt`
+5. `$ FRONTEND_ADDR=xx.xx.xx.xx USER=yy ./loadgen.sh`
