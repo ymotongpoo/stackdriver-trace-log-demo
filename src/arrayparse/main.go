@@ -39,8 +39,9 @@ import (
 )
 
 const (
-	listenPort   = "5050"
-	initMaxRetry = 3
+	listenPort       = "5050"
+	initMaxRetry     = 3
+	traceLogFieldKey = "logging.googleapis.com/trace"
 )
 
 var (
@@ -81,6 +82,13 @@ func main() {
 type arrayParseServiceServer struct{}
 
 func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseRequest) (*pb.ParsedArray, error) {
+	// Extract TraceID from parent context
+	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
+	span := trace.FromContext(ctx)
+	sc := span.SpanContext()
+	l := logger.WithField(traceLogFieldKey, sc.TraceID)
+
+	l.Infof("Start Parse")
 	str := pr.GetTargetStr()
 	elements := strings.Split(str, ",")
 	nums := make([]int64, len(elements))
@@ -88,9 +96,11 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 		var err error
 		nums[i], err = strconv.ParseInt(n, 10, 64)
 		if err != nil {
+			l.Errorf("Error persing ParseRequest.TargetStr: %v: %v", str, err)
 			return nil, errors.Wrap(err, "ArrayParseServiceSrv#Parse")
 		}
 	}
+	l.Infof("End Parse: %v", str)
 	pa := pb.ParsedArray{
 		Numbers: nums,
 	}
