@@ -43,18 +43,18 @@ spec:
               httpHeaders:
               - name: "Cookie"
                 value: "demo-session-id=x-liveness-probe"
-        env:
-        - name: "ARRAY_PARSE_SERVICE_ADDR"
-          value: "arrayparseservice:5050"
-        - name: "ADD_NUMBER_SERVICE_ADDR"
-          value: "addnumberservice:4040"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
+          env:
+          - name: "ARRAY_PARSE_SERVICE_ADDR"
+            value: "arrayparseservice:5050"
+          - name: "ADD_NUMBER_SERVICE_ADDR"
+            value: "addnumberservice:4040"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
