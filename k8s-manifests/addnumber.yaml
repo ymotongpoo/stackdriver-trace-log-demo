@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: extension/v1beta1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: addnumberservice
@@ -27,19 +27,19 @@ spec:
           image: addnumberservice
           ports:
           - containerPort: 4040
-          redinessProbe:
+          readinessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:4040"]
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:4040"]
-        resources:
-          requests:
-            cpu: 100m
-            memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
 ---
 apiVersion: v1
 kind: Service

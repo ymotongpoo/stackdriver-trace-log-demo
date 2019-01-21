@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: extension/v1beta1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: arrayparseservice
@@ -27,22 +27,22 @@ spec:
           image: arrayparseservice
           ports:
           - containerPort: 5050
-          redinessProbe:
+          readinessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5050"]
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5050"]
-        env:
-        - name: ADD_NUMBER_SERVICE
-          value: addnumberservice:4040
-        resources:
-          requests:
-            cpu: 100m
-            memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
+          env:
+          - name: ADD_NUMBER_SERVICE
+            value: addnumberservice:4040
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
 ---
 apiVersion: v1
 kind: Service

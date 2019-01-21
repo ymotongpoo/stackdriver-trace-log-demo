@@ -27,7 +27,7 @@ spec:
           image: frontendservice
           ports:
           - containerPort: 8080
-          redinessProbe:
+          readinessProbe:
             initialDelaySeconds: 10
             httpGet:
               path: "/_healthz"
@@ -72,7 +72,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  neme: frontend-external
+  name: frontend-external
 spec:
   type: LoadBalancer
   selector:
