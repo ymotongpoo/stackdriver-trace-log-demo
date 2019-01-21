@@ -41,6 +41,7 @@ import (
 const (
 	listenPort       = "5050"
 	initMaxRetry     = 3
+	projectID        = "yoshifumi-cloud-demo" // TODO(ymotongpoo): fetch Project ID from GKE
 	traceLogFieldKey = "logging.googleapis.com/trace"
 )
 
@@ -86,7 +87,8 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
-	l := logger.WithField(traceLogFieldKey, sc.TraceID)
+	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID)
+	l := logger.WithField(traceLogFieldKey, traceValue)
 
 	l.Infof("Start Parse")
 	str := pr.GetTargetStr()

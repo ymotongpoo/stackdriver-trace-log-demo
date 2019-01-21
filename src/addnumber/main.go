@@ -39,6 +39,7 @@ import (
 const (
 	listenPort       = "4040"
 	initMaxRetry     = 3
+	projectID        = "yoshifumi-cloud-demo" // TODO(ymotongpoo): fetch Project ID from GKE
 	traceLogFieldKey = "logging.googleapis.com/trace"
 )
 
@@ -78,7 +79,8 @@ func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*
 	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
-	l := logger.WithField(traceLogFieldKey, sc.TraceID)
+	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID)
+	l := logger.WithField(traceLogFieldKey, traceValue)
 
 	l.Info("Start Add")
 	nums := ar.GetNumbers()
