@@ -59,11 +59,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: frontendservice
 spec:
   type: ClusterIP
   selector:
-    app: frontend
+    app: frontendservice
   ports:
   - name: http
     port: 80
@@ -72,11 +72,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-external
+  name: frontendservice-external
 spec:
   type: LoadBalancer
   selector:
-    app: frontend
+    app: frontendservice
   ports:
   - name: http
     port: 80

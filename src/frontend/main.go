@@ -74,6 +74,7 @@ func main() {
 	e.HEAD("/", homeHandler)
 	e.GET("/_healthz", healthHandler)
 
+        e.Start("0.0.0.0:8080")
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
@@ -92,7 +93,7 @@ func homeHandler(c echo.Context) error {
 	}
 	paStr := make([]string, len(pa.GetNumbers()))
 	for i, n := range pa.GetNumbers() {
-		paStr[i] = strconv.FormatInt(n, 0)
+		paStr[i] = strconv.FormatInt(n, 10)
 	}
 
 	return c.String(http.StatusOK, strings.Join(paStr, ","))

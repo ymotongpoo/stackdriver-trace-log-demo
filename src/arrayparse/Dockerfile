@@ -18,5 +18,5 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.2.0 && \
         chmod +x /bin/grpc_health_probe
 WORKDIR /arrayparse
 COPY --from=builder /go/bin/arrayparse /arrayparse/server
-EXPOSE 8080
+EXPOSE 5050
 ENTRYPOINT ["/arrayparse/server"]

@@ -34,7 +34,7 @@ spec:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5050"]
           env:
-          - name: ADD_NUMBER_SERVICE
+          - name: ADD_NUMBER_SERVICE_ADDR
             value: addnumberservice:4040
           resources:
             requests:
