@@ -16,10 +16,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os"
-	"strconv"
 	"time"
 
 	"cloud.google.com/go/profiler"
@@ -29,93 +29,72 @@ import (
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/labstack/echo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/frontend/genproto"
+	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/arrayparse/genproto"
 )
 
 const (
-	port         = "8080"
-	cookieMaxAge = 60 * 60 * 24
+	listenPort   = "4040"
 	initMaxRetry = 3
 )
 
 var (
 	logger *logrus.Logger
-
-	arrayParseSvcAddr string
-	arrayParseSvcConn *grpc.ClientConn
-
-	addNumberSvcAddr string
-	addNumberSvcConn *grpc.ClientConn
 )
 
 func main() {
 	ctx := context.Background()
+	_ = ctx // TODO(add trace instrumentation using this context)
+
 	initLogger()
 	go initTracing()
-	go initProfiling("frontend", "1.0.0")
+	go initProfiling("addnumber", "1.0.0")
 
-	srvPort := port
-	if p := os.Getenv("PORT"); p != "" {
-		srvPort = p
-	}
-	addr := os.Getenv("LISTEN_ADDR")
-	mustMapEnv(&arrayParseSvcAddr, "ARRAY_PARSE_SERVICE_ADDR")
-	mustMapEnv(&addNumberSvcAddr, "ADD_NUMBER_SERVICE_ADDR")
-	mustConnGRPC(ctx, &arrayParseSvcConn, arrayParseSvcAddr)
-	mustConnGRPC(ctx, &addNumberSvcConn, addNumberSvcAddr)
-
-	e := echo.New()
-	e.GET("/", homeGetHandler)
-	e.HEAD("/", homeHeadHandler)
-	e.GET("/_healthz", healthHandler)
-
-	logger.Infof("starting server on " + addr + ":" + srvPort)
-}
-
-// ---- handlers ----
-
-func homeGetHandler(c echo.Context) error {
-	numStr := c.QueryParam("num")
-	if numStr == "" {
-		return c.String(http.StatusBadRequest, "add `num` URL parameter with comma separated int values")
+	port := listenPort
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
 	}
 
-	parseReq := &pb.ParseRequest{
-		TargetStr: numStr,
-	}
-	logger.Infof("[homeGetHandler] call arrayparse service: %v", parseReq.String())
-	apSvc := pb.NewArrayParseServiceClient(arrayParseSvcConn)
-	pa, err := apSvc.Parse(c.Request().Context(), parseReq)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		logger.Errorf("[homeGetHandler] %v", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		log.Fatal(err)
 	}
-
-	addReq := &pb.AddRequest{
-		Numbers: pa.GetNumbers(),
-	}
-	logger.Infof("[homeGetHandler] call addnumber service: %v", addReq.String())
-	anSvc := pb.NewAddNumberServiceClient(addNumberSvcConn)
-	ar, err := anSvc.Add(c.Request().Context(), addReq)
-	if err != nil {
-		logger.Errorf("[homeGetHandler] %v", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-
-	arStr := strconv.FormatInt(ar.GetNumber(), 10)
-	return c.String(http.StatusOK, arStr)
+	srv := grpc.NewServer(grpc.StatsHandler(&ocgrpc.ServerHandler{}))
+	svc := new(addNumberServiceServer)
+	pb.RegisterAddNumberServiceServer(srv, svc)
+	healthpb.RegisterHealthServer(srv, svc)
+	logger.Infof("starting to listen on tcp: %q", lis.Addr().String())
+	err = srv.Serve(lis)
+	logger.Fatal(err)
 }
 
-func homeHeadHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "ok")
+// ---- gRPC ----
+
+type addNumberServiceServer struct{}
+
+func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*pb.AddResult, error) {
+	nums := ar.GetNumbers()
+	total := int64(0)
+	for _, n := range nums {
+		total += n
+	}
+	result := pb.AddResult{
+		Number: total,
+	}
+	return &result, nil
 }
 
-func healthHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "ok")
+func (an *addNumberServiceServer) Check(ctx context.Context, r *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
+	return &healthpb.HealthCheckResponse{
+		Status: healthpb.HealthCheckResponse_SERVING,
+	}, nil
+}
+
+func (an *addNumberServiceServer) Watch(r *healthpb.HealthCheckRequest, _ healthpb.Health_WatchServer) error {
+	return nil
 }
 
 // ---- init funcitons ----
