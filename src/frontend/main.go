@@ -73,6 +73,7 @@ func main() {
 	e.HEAD("/", homeHeadHandler)
 	e.GET("/_healthz", healthHandler)
 
+        e.Start("0.0.0.0:" + srvPort)
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
