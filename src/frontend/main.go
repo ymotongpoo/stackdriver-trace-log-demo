@@ -70,18 +70,21 @@ func main() {
 	mustConnGRPC(ctx, &addNumberSvcConn, addNumberSvcAddr)
 
 	e := echo.New()
-	e.GET("/", homeHandler)
-	e.HEAD("/", homeHandler)
+	e.GET("/", homeGetHandler)
+	e.HEAD("/", homeHeadHandler)
 	e.GET("/_healthz", healthHandler)
 
-        e.Start("0.0.0.0:8080")
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
 // ---- handlers ----
 
-func homeHandler(c echo.Context) error {
+func homeGetHandler(c echo.Context) error {
 	numStr := c.QueryParam("num")
+	if numStr == "" {
+		return c.String(http.StatusBadRequest, "add `num` URL parameter with comma separated int values")
+	}
+
 	parseReq := &pb.ParseRequest{
 		TargetStr: numStr,
 	}
@@ -93,10 +96,14 @@ func homeHandler(c echo.Context) error {
 	}
 	paStr := make([]string, len(pa.GetNumbers()))
 	for i, n := range pa.GetNumbers() {
-		paStr[i] = strconv.FormatInt(n, 10)
+		paStr[i] = strconv.FormatInt(n, 0)
 	}
 
 	return c.String(http.StatusOK, strings.Join(paStr, ","))
+}
+
+func homeHeadHandler(c echo.Context) error {
+	return c.String(http.StatusOK, "ok")
 }
 
 func healthHandler(c echo.Context) error {
