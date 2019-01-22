@@ -88,10 +88,10 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
-	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID)
+	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID.String())
 	l := logger.WithFields(logrus.Fields{
 		traceLogFieldKey: traceValue,
-		spanLogFiledKey:  sc.SpanID,
+		spanLogFiledKey:  sc.SpanID.String(),
 	})
 
 	l.Infof("Start Parse")
