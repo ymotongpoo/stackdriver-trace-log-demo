@@ -37,8 +37,10 @@ import (
 )
 
 const (
-	listenPort   = "4040"
-	initMaxRetry = 3
+	listenPort       = "4040"
+	initMaxRetry     = 3
+	projectID        = "yoshifumi-cloud-demo" // TODO(ymotongpoo): fetch Project ID from GKE
+	traceLogFieldKey = "logging.googleapis.com/trace"
 )
 
 var (
@@ -46,9 +48,6 @@ var (
 )
 
 func main() {
-	ctx := context.Background()
-	_ = ctx // TODO(add trace instrumentation using this context)
-
 	initLogger()
 	go initTracing()
 	go initProfiling("addnumber", "1.0.0")
@@ -76,11 +75,20 @@ func main() {
 type addNumberServiceServer struct{}
 
 func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*pb.AddResult, error) {
+	// Extract TraceID from parent context
+	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
+	span := trace.FromContext(ctx)
+	sc := span.SpanContext()
+	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID)
+	l := logger.WithField(traceLogFieldKey, traceValue)
+
+	l.Info("Start Add")
 	nums := ar.GetNumbers()
 	total := int64(0)
 	for _, n := range nums {
 		total += n
 	}
+	l.Infof("End Add: %v", nums)
 	result := pb.AddResult{
 		Number: total,
 	}

@@ -73,7 +73,7 @@ func main() {
 	e.HEAD("/", homeHeadHandler)
 	e.GET("/_healthz", healthHandler)
 
-        e.Start("0.0.0.0:" + srvPort)
+	e.Start("0.0.0.0:" + srvPort)
 	logger.Infof("starting server on " + addr + ":" + srvPort)
 }
 
@@ -85,12 +85,16 @@ func homeGetHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "add `num` URL parameter with comma separated int values")
 	}
 
+	// Start a trace span.
+	ctx, span := trace.StartSpan(c.Request().Context(), "frontend")
+	defer span.End()
+
 	parseReq := &pb.ParseRequest{
 		TargetStr: numStr,
 	}
 	logger.Infof("[homeGetHandler] call arrayparse service: %v", parseReq.String())
 	apSvc := pb.NewArrayParseServiceClient(arrayParseSvcConn)
-	pa, err := apSvc.Parse(c.Request().Context(), parseReq)
+	pa, err := apSvc.Parse(ctx, parseReq)
 	if err != nil {
 		logger.Errorf("[homeGetHandler] %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -101,7 +105,7 @@ func homeGetHandler(c echo.Context) error {
 	}
 	logger.Infof("[homeGetHandler] call addnumber service: %v", addReq.String())
 	anSvc := pb.NewAddNumberServiceClient(addNumberSvcConn)
-	ar, err := anSvc.Add(c.Request().Context(), addReq)
+	ar, err := anSvc.Add(ctx, addReq)
 	if err != nil {
 		logger.Errorf("[homeGetHandler] %v", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
