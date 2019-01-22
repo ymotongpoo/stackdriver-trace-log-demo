@@ -14,5 +14,5 @@ class RandomBehavior(TaskSet):
 
 class Client(HttpLocust):
     task_set = RandomBehavior
-    min_wait = 1000
-    max_wait = 5000
+    min_wait = 3000
+    max_wait = 10000

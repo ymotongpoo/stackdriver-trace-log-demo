@@ -86,16 +86,16 @@ func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*
 		spanLogFiledKey:  sc.SpanID.String(),
 	})
 
-	l.Info("Start Add")
+	l.Info("[addNumberService:Add] Start Add")
 	// Dummy heavy process
-	time.Sleep(200)
+	time.Sleep(200 * time.Millisecond)
 
 	nums := ar.GetNumbers()
 	total := int64(0)
 	for _, n := range nums {
 		total += n
 	}
-	l.Infof("End Add: %v", nums)
+	l.Infof("[addNumberService:Add] End Add: %v", nums)
 	result := pb.AddResult{
 		Number: total,
 	}
