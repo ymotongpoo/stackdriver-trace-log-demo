@@ -41,6 +41,7 @@ const (
 	initMaxRetry     = 3
 	projectID        = "yoshifumi-cloud-demo" // TODO(ymotongpoo): fetch Project ID from GKE
 	traceLogFieldKey = "logging.googleapis.com/trace"
+	spanLogFiledKey  = "logging.googleapis.com/spanId"
 )
 
 var (
@@ -80,7 +81,10 @@ func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
 	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID)
-	l := logger.WithField(traceLogFieldKey, traceValue)
+	l := logger.WithFields(logrus.Fields{
+		traceLogFieldKey: traceValue,
+		spanLogFiledKey:  sc.SpanID,
+	})
 
 	l.Info("Start Add")
 	nums := ar.GetNumbers()
