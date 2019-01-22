@@ -95,6 +95,9 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 	})
 
 	l.Infof("Start Parse")
+	// Dummy heavy process
+	time.Sleep(200)
+
 	str := pr.GetTargetStr()
 	elements := strings.Split(str, ",")
 	nums := make([]int64, len(elements))

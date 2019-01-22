@@ -87,6 +87,9 @@ func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*
 	})
 
 	l.Info("Start Add")
+	// Dummy heavy process
+	time.Sleep(200)
+
 	nums := ar.GetNumbers()
 	total := int64(0)
 	for _, n := range nums {
