@@ -22,6 +22,8 @@ build:
     context: src/arrayparse
   - image: addnumberservice
     context: src/addnumber
+  - image: loadgen
+    context: src/loadgen
 deploy:
   kubectl:
     manifests:
