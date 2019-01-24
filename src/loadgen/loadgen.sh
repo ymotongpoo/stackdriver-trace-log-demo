@@ -14,5 +14,5 @@
 # limitations under the License.
 
 #!/bin/bash
-locust --host="http://${FRONTEND_ADDR}" --no-web -c "${USERS:-10}"
+locust --host="http://${FRONTEND_ADDR}" --no-web -c "${USERS:-1}"
 

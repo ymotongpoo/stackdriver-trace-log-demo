@@ -94,7 +94,10 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 		spanLogFiledKey:  sc.SpanID.String(),
 	})
 
-	l.Infof("Start Parse")
+	l.Infof("[arrayParseService:Parse] Start Parse")
+	// Dummy heavy process
+	time.Sleep(200 * time.Millisecond)
+
 	str := pr.GetTargetStr()
 	elements := strings.Split(str, ",")
 	nums := make([]int64, len(elements))
@@ -102,11 +105,11 @@ func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseReques
 		var err error
 		nums[i], err = strconv.ParseInt(n, 10, 64)
 		if err != nil {
-			l.Errorf("Error persing ParseRequest.TargetStr: %v: %v", str, err)
+			l.Errorf("[arrayParseService:Parse] Error persing ParseRequest.TargetStr: %v: %v", str, err)
 			return nil, errors.Wrap(err, "ArrayParseServiceSrv#Parse")
 		}
 	}
-	l.Infof("End Parse: %v", str)
+	l.Infof("[arrayParseService:Parse] End Parse: %v", str)
 	pa := pb.ParsedArray{
 		Numbers: nums,
 	}
