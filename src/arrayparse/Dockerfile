@@ -8,7 +8,7 @@ COPY . .
 # restore dependencies
 ENV GO111MODULE=on
 RUN go get
-RUN go build
+RUN go build -mod=vendor
 
 FROM alpine as release
 RUN apk add --no-cache ca-certificates \
