@@ -32,8 +32,9 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/frontend/genproto"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -43,7 +44,7 @@ const (
 )
 
 var (
-	logger *logrus.Logger
+	logger *zap.SugaredLogger
 
 	arrayParseSvcAddr string
 	arrayParseSvcConn *grpc.ClientConn
@@ -126,19 +127,33 @@ func healthHandler(c echo.Context) error {
 // ---- init funcitons ----
 
 func initLogger() {
-	logger = logrus.New()
-	logger.Level = logrus.DebugLevel
-	logger.Formatter = &logrus.JSONFormatter{
-		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyTime:  "timestamp",
-			logrus.FieldKeyLevel: "severity",
-			logrus.FieldKeyMsg:   "message",
+	cfg := zap.Config{
+		Encoding:         "json",
+		Level:            zap.NewAtomicLevelAt(zapcore.DebugLevel),
+		OutputPaths:      []string{"stdout"},
+		ErrorOutputPaths: []string{"stderr"},
+		EncoderConfig: zapcore.EncoderConfig{
+			MessageKey:     "message",
+			LevelKey:       "severity",
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			TimeKey:        "timestamp",
+			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeDuration: zapcore.StringDurationEncoder,
+			CallerKey:      "caller",
+			EncodeCaller:   zapcore.ShortCallerEncoder,
 		},
 	}
-	logger.Out = os.Stdout
+
+	var err error
+	var l *zap.Logger
+	l, err = cfg.Build()
+	if err != nil {
+		log.Fatal("failed to create logger: %v", err)
+	}
+	logger = l.Sugar()
 }
 
-func initStats(log logrus.FieldLogger, exporter *stackdriver.Exporter) {
+func initStats(log *zap.SugaredLogger, exporter *stackdriver.Exporter) {
 	view.SetReportingPeriod(60 * time.Second)
 	view.RegisterExporter(exporter)
 	if err := view.Register(ochttp.DefaultServerViews...); err != nil {
@@ -161,10 +176,10 @@ func initTracing() {
 	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 
 	for i := 1; i <= initMaxRetry; i++ {
-		log := logger.WithField("retry", i)
+		log := logger.With("retry", i)
 		exporter, err := stackdriver.NewExporter(stackdriver.Options{})
 		if err != nil {
-			logger.Fatalf("failed to initialize stackdriver exporter: %+v", err)
+			log.Fatalf("failed to initialize stackdriver exporter: %+v", err)
 		} else {
 			trace.RegisterExporter(exporter)
 			log.Info("registered stackdriver tracing")
@@ -182,7 +197,7 @@ func initTracing() {
 
 func initProfiling(service, version string) {
 	for i := 1; i <= initMaxRetry; i++ {
-		log := logger.WithField("retry", i)
+		log := logger.With("retry", i)
 		if err := profiler.Start(profiler.Config{
 			Service:        service,
 			ServiceVersion: version,
