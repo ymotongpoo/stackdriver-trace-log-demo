@@ -148,7 +148,7 @@ func initLogger() {
 	var l *zap.Logger
 	l, err = cfg.Build()
 	if err != nil {
-		log.Fatal("failed to create logger: %v", err)
+		log.Fatalf("failed to create logger: %v", err)
 	}
 	logger = l.Sugar()
 }
