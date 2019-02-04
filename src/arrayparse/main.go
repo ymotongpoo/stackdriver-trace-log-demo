@@ -86,6 +86,10 @@ type arrayParseServiceServer struct{}
 func (ap *arrayParseServiceServer) Parse(ctx context.Context, pr *pb.ParseRequest) (*pb.ParsedArray, error) {
 	// Extract TraceID from parent context
 	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
+	//
+        // GKE configures `autoformat_stackdriver_trace=true` by default and the users don't have to
+	// follow the format (`projects/[PROJECT-ID]/traces/[TRACE-ID]`) by themselves.
+        // https://cloud.google.com/logging/docs/agent/configuration#cloud-fluentd-config
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
 	l := logger.WithFields(logrus.Fields{
