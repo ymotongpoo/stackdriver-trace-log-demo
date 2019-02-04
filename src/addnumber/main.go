@@ -80,9 +80,8 @@ func (an *addNumberServiceServer) Add(ctx context.Context, ar *pb.AddRequest) (*
 	// https://cloud.google.com/logging/docs/agent/configuration#special-fields
 	span := trace.FromContext(ctx)
 	sc := span.SpanContext()
-	traceValue := fmt.Sprintf("projects/%s/traces/%s", projectID, sc.TraceID.String())
 	l := logger.WithFields(logrus.Fields{
-		traceLogFieldKey: traceValue,
+		traceLogFieldKey: sc.TraceID.String(),
 		spanLogFiledKey:  sc.SpanID.String(),
 	})
 
