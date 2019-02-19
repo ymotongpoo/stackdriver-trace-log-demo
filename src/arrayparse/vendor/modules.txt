@@ -2,79 +2,56 @@
 cloud.google.com/go/profiler
 cloud.google.com/go/compute/metadata
 cloud.google.com/go/internal/version
-cloud.google.com/go/monitoring/apiv3
-cloud.google.com/go/trace/apiv2
-# contrib.go.opencensus.io/exporter/stackdriver v0.8.0
-contrib.go.opencensus.io/exporter/stackdriver
-contrib.go.opencensus.io/exporter/stackdriver/monitoredresource
-# github.com/aws/aws-sdk-go v1.15.31
-github.com/aws/aws-sdk-go/aws/ec2metadata
-github.com/aws/aws-sdk-go/aws/session
-github.com/aws/aws-sdk-go/aws
-github.com/aws/aws-sdk-go/aws/awserr
-github.com/aws/aws-sdk-go/aws/client
-github.com/aws/aws-sdk-go/aws/client/metadata
-github.com/aws/aws-sdk-go/aws/corehandlers
-github.com/aws/aws-sdk-go/aws/request
-github.com/aws/aws-sdk-go/internal/sdkuri
-github.com/aws/aws-sdk-go/aws/credentials
-github.com/aws/aws-sdk-go/aws/credentials/stscreds
-github.com/aws/aws-sdk-go/aws/csm
-github.com/aws/aws-sdk-go/aws/defaults
-github.com/aws/aws-sdk-go/aws/endpoints
-github.com/aws/aws-sdk-go/internal/sdkio
-github.com/aws/aws-sdk-go/internal/sdkrand
-github.com/aws/aws-sdk-go/aws/awsutil
-github.com/aws/aws-sdk-go/internal/shareddefaults
-github.com/aws/aws-sdk-go/service/sts
-github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
-github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
-github.com/aws/aws-sdk-go/aws/signer/v4
-github.com/aws/aws-sdk-go/private/protocol/query
-github.com/aws/aws-sdk-go/private/protocol/rest
-github.com/aws/aws-sdk-go/private/protocol/query/queryutil
-github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
-github.com/aws/aws-sdk-go/private/protocol
-# github.com/go-ini/ini v1.25.4
-github.com/go-ini/ini
+# contrib.go.opencensus.io/exporter/ocagent v0.4.4
+contrib.go.opencensus.io/exporter/ocagent
+# github.com/census-instrumentation/opencensus-proto v0.1.0-0.20181214143942-ba49f56771b8
+github.com/census-instrumentation/opencensus-proto/gen-go/agent/common/v1
+github.com/census-instrumentation/opencensus-proto/gen-go/agent/metrics/v1
+github.com/census-instrumentation/opencensus-proto/gen-go/agent/trace/v1
+github.com/census-instrumentation/opencensus-proto/gen-go/metrics/v1
+github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1
+github.com/census-instrumentation/opencensus-proto/gen-go/trace/v1
 # github.com/golang/protobuf v1.2.0
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/timestamp
-github.com/golang/protobuf/ptypes/wrappers
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
-github.com/golang/protobuf/ptypes/struct
-github.com/golang/protobuf/ptypes/empty
+github.com/golang/protobuf/ptypes/wrappers
 github.com/golang/protobuf/protoc-gen-go/descriptor
+github.com/golang/protobuf/jsonpb
+github.com/golang/protobuf/ptypes/struct
 # github.com/google/pprof v0.0.0-20190109223431-e84dfd68c163
 github.com/google/pprof/profile
 # github.com/googleapis/gax-go v2.0.0+incompatible
 github.com/googleapis/gax-go
-# github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8
-github.com/jmespath/go-jmespath
+# github.com/grpc-ecosystem/grpc-gateway v1.5.0
+github.com/grpc-ecosystem/grpc-gateway/runtime
+github.com/grpc-ecosystem/grpc-gateway/utilities
+github.com/grpc-ecosystem/grpc-gateway/runtime/internal
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/sirupsen/logrus v1.2.0
 github.com/sirupsen/logrus
-# go.opencensus.io v0.18.0
+# go.opencensus.io v0.18.1-0.20181204023538-aab39bd6a98b
 go.opencensus.io/plugin/ocgrpc
 go.opencensus.io/plugin/ochttp
 go.opencensus.io/stats/view
 go.opencensus.io/trace
 go.opencensus.io
+go.opencensus.io/exemplar
+go.opencensus.io/resource
 go.opencensus.io/stats
 go.opencensus.io/tag
+go.opencensus.io/trace/tracestate
 go.opencensus.io/trace/propagation
 go.opencensus.io/plugin/ochttp/propagation/b3
-go.opencensus.io/exemplar
 go.opencensus.io/internal/tagencoding
 go.opencensus.io/stats/internal
 go.opencensus.io/internal
 go.opencensus.io/trace/internal
-go.opencensus.io/trace/tracestate
 # golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
 golang.org/x/crypto/ssh/terminal
 # golang.org/x/net v0.0.0-20181029044818-c44066c5c816
@@ -87,8 +64,8 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/http/httpguts
 golang.org/x/net/idna
 # golang.org/x/oauth2 v0.0.0-20181017192945-9dcd33a902f4
-golang.org/x/oauth2/google
 golang.org/x/oauth2
+golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
@@ -107,11 +84,6 @@ google.golang.org/api/option
 google.golang.org/api/transport/grpc
 google.golang.org/api/support/bundler
 google.golang.org/api/internal
-google.golang.org/api/iterator
-google.golang.org/api/transport
-google.golang.org/api/transport/http
-google.golang.org/api/googleapi/transport
-google.golang.org/api/transport/http/internal/propagation
 # google.golang.org/appengine v1.2.0
 google.golang.org/appengine
 google.golang.org/appengine/socket
@@ -128,15 +100,9 @@ google.golang.org/appengine/internal/urlfetch
 # google.golang.org/genproto v0.0.0-20181029155118-b69ba1387ce2
 google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2
 google.golang.org/genproto/googleapis/rpc/errdetails
-google.golang.org/genproto/googleapis/api/distribution
-google.golang.org/genproto/googleapis/api/label
-google.golang.org/genproto/googleapis/api/metric
-google.golang.org/genproto/googleapis/api/monitoredres
-google.golang.org/genproto/googleapis/devtools/cloudtrace/v2
-google.golang.org/genproto/googleapis/monitoring/v3
-google.golang.org/genproto/googleapis/rpc/status
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/protobuf/field_mask
+google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.18.0
 google.golang.org/grpc
 google.golang.org/grpc/health/grpc_health_v1
