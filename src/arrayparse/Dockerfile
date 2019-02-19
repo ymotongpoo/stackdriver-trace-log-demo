@@ -20,10 +20,11 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.2.0 && \
 # set up OpenCensus Agent
 RUN wget -qO /bin/ocagent https://github.com/census-instrumentation/opencensus-service/releases/download/0.1.2/ocagent_linux && \
         chmod +x /bin/ocagent
-COPY oce.yaml /etc/oce.yaml
-
+COPY oca.yaml /etc/oca.yaml
 
 WORKDIR /arrayparse
 COPY --from=builder /go/bin/arrayparse /arrayparse/server
+COPY run.sh run.sh
+RUN chmod +x run.sh
 EXPOSE 5050
-ENTRYPOINT ["run.sh"]
+ENTRYPOINT ["/arrayparse/run.sh"]
