@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/profiler"
-	"contrib.go.opencensus.io/exporter/stackdriver"
+	"contrib.go.opencensus.io/exporter/ocagent"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/stats/view"
@@ -33,13 +33,12 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/arrayparse/genproto"
+	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/addnubmer/genproto"
 )
 
 const (
 	listenPort       = "4040"
 	initMaxRetry     = 3
-	projectID        = "yoshifumi-cloud-demo" // TODO(ymotongpoo): fetch Project ID from GKE
 	traceLogFieldKey = "logging.googleapis.com/trace"
 	spanLogFiledKey  = "logging.googleapis.com/spanId"
 )
@@ -130,7 +129,7 @@ func initLogger() {
 	logger.Out = os.Stdout
 }
 
-func initStats(log logrus.FieldLogger, exporter *stackdriver.Exporter) {
+func initStats(log logrus.FieldLogger, exporter *ocagent.Exporter) {
 	view.SetReportingPeriod(60 * time.Second)
 	view.RegisterExporter(exporter)
 	if err := view.Register(ochttp.DefaultServerViews...); err != nil {
@@ -154,7 +153,8 @@ func initTracing() {
 
 	for i := 1; i <= initMaxRetry; i++ {
 		log := logger.WithField("retry", i)
-		exporter, err := stackdriver.NewExporter(stackdriver.Options{})
+		exporter, err := ocagent.NewExporter(
+			ocagent.WithReconnectionPeriod(10 * time.Second))
 		if err != nil {
 			logger.Fatalf("failed to initialize stackdriver exporter: %+v", err)
 		} else {

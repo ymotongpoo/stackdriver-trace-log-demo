@@ -1,0 +1,9 @@
+ivers:
+  opencensus:
+    address: "localhost:55678"
+exporters:
+  stackdriver:
+    project: "yoshifumi-cloud-demo"
+    metrics_prefix: "addnumber-metric"
+    enable_tracing: true
+    enable_metric: true

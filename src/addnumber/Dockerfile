@@ -16,7 +16,11 @@ RUN apk add --no-cache ca-certificates \
 RUN GRPC_HEALTH_PROBE_VERSION=v0.2.0 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
         chmod +x /bin/grpc_health_probe
+# set up OpenCensus Agent
+RUN wget -qO /bin/ocagent https://github.com/census-instrumentation/opencensus-service/releases/download/0.1.2/ocagent_linux && \
+        chmod +x /bin/ocagent
+COPY oca.yaml /etc/oca.yaml 
 WORKDIR /addnumber
 COPY --from=builder /go/bin/addnumber /addnumber/server
 EXPOSE 4040
-ENTRYPOINT ["/addnumber/server"]
+ENTRYPOINT ["run.sh"]
