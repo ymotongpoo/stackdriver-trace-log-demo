@@ -20,7 +20,10 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.2.0 && \
 RUN wget -qO /bin/ocagent https://github.com/census-instrumentation/opencensus-service/releases/download/0.1.2/ocagent_linux && \
         chmod +x /bin/ocagent
 COPY oca.yaml /etc/oca.yaml 
+
 WORKDIR /addnumber
+COPY run.sh run.sh
+RUN chmod +x run.sh
 COPY --from=builder /go/bin/addnumber /addnumber/server
 EXPOSE 4040
-ENTRYPOINT ["run.sh"]
+ENTRYPOINT ["/addnumber/run.sh"]

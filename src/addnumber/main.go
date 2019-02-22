@@ -33,7 +33,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/addnubmer/genproto"
+	pb "github.com/ymotongpoo/stackdriver-trace-log-demo/src/addnumber/genproto"
 )
 
 const (
