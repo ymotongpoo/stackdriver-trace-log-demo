@@ -16,13 +16,13 @@ apiVersion: skaffold/v1beta2
 kind: Config
 build:
   artifacts:
-  - image: frontendservice
+  - image: gcr.io/yoshifumi-cloud-demo/frontendservice
     context: src/frontend
-  - image: arrayparseservice
+  - image: gcr.io/yoshifumi-cloud-demo/arrayparseservice
     context: src/arrayparse
-  - image: addnumberservice
+  - image: gcr.io/yoshifumi-cloud-demo/addnumberservice
     context: src/addnumber
-  - image: loadgen
+  - image: gcr.io/yoshifumi-cloud-demo/loadgen
     context: src/loadgen
 deploy:
   kubectl:

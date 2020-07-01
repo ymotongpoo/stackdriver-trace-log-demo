@@ -1,18 +1,9 @@
-FROM python:3-slim as base
-
-FROM base as builder
-
+FROM python:3.8-slim
 RUN apt-get -qq update \
     && apt-get install -y --no-install-recommends \
-        g++
-
+        g++ build-essential libffi-dev
 COPY requirements.txt .
 COPY constraints.txt .
-
-RUN pip install --install-option="--prefix=/install" -r requirements.txt -c constraints.txt
-
-FROM base
-COPY --from=builder /install /usr/local
-
+RUN pip install -r requirements.txt -c constraints.txt
 COPY . .
 ENTRYPOINT ./loadgen.sh

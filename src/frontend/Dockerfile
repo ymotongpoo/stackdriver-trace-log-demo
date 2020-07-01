@@ -1,18 +1,16 @@
-FROM golang:1.11.4-alpine as builder
-RUN apk add --no-cache ca-certificates git build-base
+FROM golang:1.14 as builder
+RUN apt-get -y install --no-install-recommends \
+  ca-certificates git
 
 ENV PROJECT github.com/ymotongpoo/stackdriver-trace-log-demo/src/frontend
 WORKDIR /go/src/$PROJECT
 COPY . .
-
 # restore dependencies
 ENV GO111MODULE=on
-RUN go get
-RUN go build -mod=vendor
+ENV GOPROXY="https://proxy.golang.org,direct"
+RUN go build -mod=vendor -o /go/bin/frontend
 
-FROM alpine as release
-RUN apk add --no-cache ca-certificates \
-    busybox-extras net-tools bind-tools
+FROM gcr.io/distroless/base-debian10 as release
 WORKDIR /frontend
 COPY --from=builder /go/bin/frontend /frontend/server
 EXPOSE 8080

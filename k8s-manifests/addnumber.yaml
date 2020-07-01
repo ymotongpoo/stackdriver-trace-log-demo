@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: addnumberservice
+          image: gcr.io/yoshifumi-cloud-demo/addnumberservice
           ports:
           - containerPort: 4040
           readinessProbe:

@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: arrayparseservice
+          image: gcr.io/yoshifumi-cloud-demo/arrayparseservice
           ports:
           - containerPort: 5050
           readinessProbe:
